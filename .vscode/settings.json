@@ -1,0 +1,26 @@
+{
+  // === Prettier ===
+  "prettier.enable": true, // Turns on Prettier in VS Code
+  "prettier.configPath": ".prettierrc", // Uses your project's Prettier rules
+  "editor.defaultFormatter": "esbenp.prettier-vscode", // Makes Prettier the default formatter
+  "editor.formatOnSave": true, // Auto-format every time you save a file
+
+  // === ESLint ===
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // === TypeScript / JavaScript imports ===
+  "typescript.preferences.importModuleSpecifier": "non-relative", // Uses absolute imports (based on tsconfig paths)
+  "javascript.preferences.importModuleSpecifier": "non-relative", // Same for JS
+
+  // === Tailwind CSS ===
+  "tailwindCSS.emmetCompletions": true, // Enable Tailwind autocomplete in Emmet
+  "editor.quickSuggestions": {
+    "strings": true // Shows Tailwind suggestions inside quotes
+  },
+
+  // === Files ===
+  "files.trimTrailingWhitespace": true, // Removes extra spaces at the end of lines
+  "files.insertFinalNewline": true // Adds a newline at the end of every file (good for Git)
+}
