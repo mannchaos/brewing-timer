@@ -6,7 +6,7 @@ export interface BrewingTimerArrayType {
 
 export const brewingTimerArray: BrewingTimerArrayType[] = [
   {
-    sec: 110,
+    sec: 10,
     label: "Off the boil",
     bgColor: "#142e43",
   },
