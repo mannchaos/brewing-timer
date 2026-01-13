@@ -32,6 +32,8 @@ export default function TimerDisplay(props: PropType) {
   const [isTimerRunning, setIsTimerRunnning] = useState<boolean>(false);
 
   const getStepDisplayContent = (): StepDisplayType => {
+    console.log("run", props.currentStep);
+
     const currentStepData = brewingTimerArray[props.currentStep - 1];
     const nextStepData = brewingTimerArray[props.currentStep];
 
@@ -42,40 +44,27 @@ export default function TimerDisplay(props: PropType) {
     };
   };
 
-  const renderer = ({ hours, minutes, seconds, completed }: RendererType) => {
+  const renderer = ({ hours, minutes, seconds }: RendererType) => {
     let displayTime;
-    if (completed) {
-      const displayData: StepDisplayType = getStepDisplayContent();
 
-      if (props.currentStep < 4) {
-        props.setCurrentStep(prev => (prev < 4 ? ((prev + 1) as CurrentStepStateType) : prev));
-        return (
-          <div className="text-center">
-            <p className="text-site-gray font-light tracking-widest">Now, let's Start</p>
-            <p className="mt-3 font-medium tracking-wide">{displayData.nextLabel}</p>
-          </div>
-        );
-      } else {
-        return (
-          <div className="text-center">
-            <p className="text-site-gray font-light tracking-widest">Brewed!! </p>
-            <p className="mt-3 font-medium tracking-wide">Enjoy, Your Coffee!! 🥳</p>
-          </div>
-        );
-      }
-    } else {
-      if (hours > 0) {
-        displayTime = `${addPad(hours)} : ${addPad(minutes)} : ${addPad(seconds)}`;
-      }
-      if (hours == 0 && minutes >= 0) {
-        displayTime = `${addPad(minutes)} : ${addPad(seconds)}`;
-      }
-
-      return (
-        //stop layout moving with timer
-        <span className="text-center text-7xl font-light tracking-widest">{displayTime}</span>
-      );
+    if (hours > 0) {
+      displayTime = `${addPad(hours)} : ${addPad(minutes)} : ${addPad(seconds)}`;
     }
+    if (hours == 0 && minutes >= 0) {
+      displayTime = `${addPad(minutes)} : ${addPad(seconds)}`;
+    }
+
+    return (
+      //stop layout moving with timer
+      <span className="text-center text-7xl font-light tracking-widest">{displayTime}</span>
+    );
+  };
+
+  const handleTimerCycleComplition = (): void => {
+    console.log("new timer data will be fetch here");
+
+    setIsTimerRunnning(false);
+    props.setCurrentStep(prev => (prev < 4 ? ((prev + 1) as CurrentStepStateType) : 1));
   };
 
   const handlePlayButton = (): void => {
@@ -84,10 +73,6 @@ export default function TimerDisplay(props: PropType) {
     }
 
     isTimerRunning ? countRef.current?.getApi().pause() : countRef.current?.getApi().start();
-
-    if (props.currentStep == 4) {
-      props.setCurrentStep(1);
-    }
   };
 
   const displayData: StepDisplayType = getStepDisplayContent();
@@ -117,6 +102,7 @@ export default function TimerDisplay(props: PropType) {
                 onStart={() => setIsTimerRunnning(true)}
                 onPause={() => setIsTimerRunnning(false)}
                 onStop={() => setIsTimerRunnning(false)}
+                onComplete={() => handleTimerCycleComplition()}
               />
             </div>
             <p className="text-site-gray mt-4 text-center font-light tracking-wide">
