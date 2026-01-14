@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Mona_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -11,6 +11,10 @@ const monaSans = Mona_Sans({
 export const metadata: Metadata = {
   title: "Mann's Brewing TIme",
   description: "Time to brew Mann's coffee",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#2131ab",
 };
 
 export default function RootLayout({

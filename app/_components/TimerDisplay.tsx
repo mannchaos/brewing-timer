@@ -25,6 +25,23 @@ export default function TimerDisplay(props: PropType) {
   const [showStartNode, setShowStartNode] = useState<boolean>(true);
   const [showComplitionNode, setShowComplitionNode] = useState(false);
   const [isTimerRunning, setIsTimerRunnning] = useState<boolean>(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const unlockAudio = () => {
+    const audio = new Audio("/audio/beep.mp3");
+    audio
+      .play()
+      .then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+        audioRef.current = audio;
+      })
+      .catch(() => {});
+  };
+
+  const playBeep = () => {
+    audioRef.current?.play();
+  };
 
   const renderer = ({ hours, minutes, seconds }: RendererType) => {
     let displayTime;
@@ -38,11 +55,12 @@ export default function TimerDisplay(props: PropType) {
 
     return (
       //stop layout moving with timer
-      <span className="text-center text-7xl font-light tracking-widest">{displayTime}</span>
+      <span className="text-center text-7xl font-bold tracking-widest">{displayTime}</span>
     );
   };
 
   const handleTimerCycleComplition = (): void => {
+    playBeep();
     setIsTimerRunnning(false);
     props.currentStep < 4
       ? props.setCurrentStep((props.currentStep + 1) as CurrentStepStateType)
@@ -56,15 +74,16 @@ export default function TimerDisplay(props: PropType) {
   };
 
   const handlePlayButton = (): void => {
+    unlockAudio();
     {
       showStartNode && setShowStartNode(false);
     }
 
-    isTimerRunning ? countRef.current?.getApi().pause() : countRef.current?.getApi().start();
+    isTimerRunning ? countRef.current?.getApi().stop() : countRef.current?.getApi().start();
   };
 
   return (
-    <div className="bg-site-blue relative flex min-h-75 flex-col rounded-b-4xl p-4">
+    <div className="bg-site-blue relative flex min-h-75 flex-col rounded-b-[42px] p-4">
       <div className="flex items-center justify-end">
         <button onClick={handleReset} className="text-sm tracking-widest underline">
           Reset

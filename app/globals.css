@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-site-blue: #1b2992;
+  --color-site-blue: #2131ab;
   --color-site-blue-dark: #0d123b;
   --color-site-white: #fffcf8;
   --color-site-pink: #f32c76;
