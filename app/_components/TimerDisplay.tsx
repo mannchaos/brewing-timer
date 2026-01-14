@@ -3,20 +3,14 @@
 import { brewingTimerArray } from "@/app/_data/BrewingTImerData";
 import { addPad } from "@/app/_utils/utils";
 import { CurrentStepStateType } from "@/app/page";
-import { Pause, Play } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { Pause, Play, RotateCcw } from "lucide-react";
+import React, { useState } from "react";
 import { useRef } from "react";
 import Countdown from "react-countdown";
 
 interface PropType {
   currentStep: number;
   setCurrentStep: React.Dispatch<React.SetStateAction<CurrentStepStateType>>;
-}
-
-interface StepDisplayType {
-  currentLabel: string;
-  currentTimer: number;
-  nextLabel: string;
 }
 
 interface RendererType {
@@ -29,20 +23,8 @@ interface RendererType {
 export default function TimerDisplay(props: PropType) {
   const countRef = useRef<Countdown | null>(null);
   const [showStartNode, setShowStartNode] = useState<boolean>(true);
+  const [showComplitionNode, setShowComplitionNode] = useState(false);
   const [isTimerRunning, setIsTimerRunnning] = useState<boolean>(false);
-
-  const getStepDisplayContent = (): StepDisplayType => {
-    console.log("run", props.currentStep);
-
-    const currentStepData = brewingTimerArray[props.currentStep - 1];
-    const nextStepData = brewingTimerArray[props.currentStep];
-
-    return {
-      currentLabel: currentStepData.label,
-      currentTimer: currentStepData.sec,
-      nextLabel: nextStepData.label,
-    };
-  };
 
   const renderer = ({ hours, minutes, seconds }: RendererType) => {
     let displayTime;
@@ -61,10 +43,16 @@ export default function TimerDisplay(props: PropType) {
   };
 
   const handleTimerCycleComplition = (): void => {
-    console.log("new timer data will be fetch here");
-
     setIsTimerRunnning(false);
-    props.setCurrentStep(prev => (prev < 4 ? ((prev + 1) as CurrentStepStateType) : 1));
+    props.currentStep < 4
+      ? props.setCurrentStep((props.currentStep + 1) as CurrentStepStateType)
+      : setShowComplitionNode(true);
+  };
+
+  const handleReset = (): void => {
+    setShowComplitionNode(false);
+    setShowStartNode(true);
+    props.setCurrentStep(1);
   };
 
   const handlePlayButton = (): void => {
@@ -75,12 +63,12 @@ export default function TimerDisplay(props: PropType) {
     isTimerRunning ? countRef.current?.getApi().pause() : countRef.current?.getApi().start();
   };
 
-  const displayData: StepDisplayType = getStepDisplayContent();
-
   return (
     <div className="bg-site-blue relative flex min-h-75 flex-col rounded-b-4xl p-4">
       <div className="flex items-center justify-end">
-        <button className="text-sm tracking-widest underline">Reset</button>
+        <button onClick={handleReset} className="text-sm tracking-widest underline">
+          Reset
+        </button>
       </div>
 
       <div className="flex h-full w-full flex-1 items-center justify-center">
@@ -90,12 +78,18 @@ export default function TimerDisplay(props: PropType) {
             <p className="mt-4 text-center text-3xl font-bold">Hi, Mann!</p>
             <p className="mt-2 text-center">Let's Brew your Coffee</p>
           </div>
+        ) : showComplitionNode ? (
+          <div className="flex flex-col">
+            <p className="text-center text-3xl">🍵</p>
+            <p className="mt-4 text-center text-3xl font-bold">Brewed!</p>
+            <p className="mt-2 text-center">Enjoy your Coffee</p>
+          </div>
         ) : (
           <div className="w-full">
             <div className="flex items-center justify-center">
               <Countdown
                 ref={countRef}
-                date={Date.now() + displayData.currentTimer * 1000}
+                date={Date.now() + brewingTimerArray[props.currentStep - 1].sec * 1000}
                 autoStart={true}
                 renderer={renderer}
                 zeroPadTime={2}
@@ -106,7 +100,7 @@ export default function TimerDisplay(props: PropType) {
               />
             </div>
             <p className="text-site-gray mt-4 text-center font-light tracking-wide">
-              {displayData.currentLabel}
+              {brewingTimerArray[props.currentStep - 1].label}
             </p>
           </div>
         )}
@@ -114,10 +108,12 @@ export default function TimerDisplay(props: PropType) {
 
       <div className="bg-site-blue-dark absolute top-full left-1/2 w-fit -translate-x-1/2 -translate-y-1/2 rounded-3xl p-3">
         <button
-          onClick={handlePlayButton}
-          className={`${isTimerRunning ? "bg-site-white" : "bg-site-pink"} flex h-17 w-17 items-center justify-center rounded-2xl`}
+          onClick={showComplitionNode ? handleReset : handlePlayButton}
+          className={`${showComplitionNode ? "bg-site-orange" : isTimerRunning ? "bg-site-white" : "bg-site-pink"} flex h-17 w-17 items-center justify-center rounded-2xl`}
         >
-          {isTimerRunning ? (
+          {showComplitionNode ? (
+            <RotateCcw className="text-site-white" size={40} />
+          ) : isTimerRunning ? (
             <Pause className="fill-site-pink stroke-0" size={40} />
           ) : (
             <Play className="fill-site-white stroke-0" size={40} />
