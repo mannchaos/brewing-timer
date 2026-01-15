@@ -69,7 +69,7 @@ export default function TimerDisplay(props: PropType) {
 
     return (
       //stop layout moving with timer
-      <span className="text-center text-7xl font-bold tracking-widest tabular-nums">
+      <span className="text-center font-sans text-7xl font-bold tracking-widest tabular-nums">
         {displayTime}
       </span>
     );
