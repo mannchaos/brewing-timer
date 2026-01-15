@@ -3,7 +3,7 @@
 import { brewingTimerArray } from "@/app/_data/BrewingTImerData";
 import { addPad } from "@/app/_utils/utils";
 import { CurrentStepStateType } from "@/app/page";
-import { Pause, Play, RotateCcw, Smartphone, X } from "lucide-react";
+import { Pause, Play, RotateCcw, Smartphone } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useRef } from "react";
 import Countdown from "react-countdown";
@@ -69,7 +69,9 @@ export default function TimerDisplay(props: PropType) {
 
     return (
       //stop layout moving with timer
-      <span className="text-center text-7xl font-bold tracking-widest">{displayTime}</span>
+      <span className="text-center text-7xl font-bold tracking-widest tabular-nums">
+        {displayTime}
+      </span>
     );
   };
 
@@ -84,18 +86,10 @@ export default function TimerDisplay(props: PropType) {
     }
   };
 
-  const handleResetOrClose = (opp: "reset" | "close tab"): void => {
-    if (opp == "close tab") {
-      if (window !== undefined) {
-        window?.open("", "_self")?.close();
-      }
-    }
-
-    if (opp == "reset") {
-      setShowComplitionNode(false);
-      setShowStartNode(true);
-      props.setCurrentStep(1);
-    }
+  const handleReset = (): void => {
+    setShowComplitionNode(false);
+    setShowStartNode(true);
+    props.setCurrentStep(1);
   };
 
   const handlePlayButton = (): void => {
@@ -124,7 +118,7 @@ export default function TimerDisplay(props: PropType) {
         )}
 
         <button
-          onClick={() => handleResetOrClose("reset")}
+          onClick={() => handleReset()}
           className="bg-site-orange text-site-white ml-auto flex h-8 w-8 items-center justify-center rounded-full"
         >
           <RotateCcw className="text-site-white" size={20} />
@@ -168,13 +162,11 @@ export default function TimerDisplay(props: PropType) {
 
       <div className="bg-site-blue-dark absolute top-full left-1/2 w-fit -translate-x-1/2 -translate-y-1/2 rounded-3xl p-3">
         <button
-          onClick={() =>
-            showComplitionNode ? handleResetOrClose("close tab") : handlePlayButton()
-          }
+          onClick={() => (showComplitionNode ? handleReset() : handlePlayButton())}
           className={`${showComplitionNode ? "bg-site-orange" : isTimerRunning ? "bg-site-white" : "bg-site-pink"} flex h-17 w-17 items-center justify-center rounded-2xl`}
         >
           {showComplitionNode ? (
-            <X className="text-site-white" size={40} />
+            <RotateCcw className="text-site-white" size={40} />
           ) : isTimerRunning ? (
             <Pause className="fill-site-pink stroke-0" size={40} />
           ) : (
