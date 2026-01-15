@@ -168,7 +168,9 @@ export default function TimerDisplay(props: PropType) {
 
       <div className="bg-site-blue-dark absolute top-full left-1/2 w-fit -translate-x-1/2 -translate-y-1/2 rounded-3xl p-3">
         <button
-          onClick={() => (showComplitionNode ? handleResetOrClose("close tab") : handlePlayButton)}
+          onClick={() =>
+            showComplitionNode ? handleResetOrClose("close tab") : handlePlayButton()
+          }
           className={`${showComplitionNode ? "bg-site-orange" : isTimerRunning ? "bg-site-white" : "bg-site-pink"} flex h-17 w-17 items-center justify-center rounded-2xl`}
         >
           {showComplitionNode ? (

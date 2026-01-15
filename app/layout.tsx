@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${monaSans.variable} font-sans antialiased`}>
       <meta name="theme-color" content="#2131ab" />
-      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <body className={`antialiased`}>
         <div className="bg-site-blue-dark mx-auto min-h-dvh w-full max-w-112.5">{children}</div>
