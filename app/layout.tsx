@@ -9,8 +9,17 @@ const monaSans = Mona_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Mann's Brewing TIme",
-  description: "Time to brew Mann's coffee",
+  title: "Brew Timer",
+  description: "Coffee brewing timer",
+  manifest: "/app/manifest.json",
+  icons: {
+    icon: [
+      { url: "/favicons/favicon.ico" },
+      { url: "/favicons/icon1.png", type: "image/png" },
+      { url: "/favicons/icon0.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/favicons/apple-icon.png" }],
+  },
 };
 
 export const viewport: Viewport = {
