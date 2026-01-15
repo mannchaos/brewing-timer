@@ -3,10 +3,11 @@
 import { brewingTimerArray } from "@/app/_data/BrewingTImerData";
 import { addPad } from "@/app/_utils/utils";
 import { CurrentStepStateType } from "@/app/page";
-import { Pause, Play, RotateCcw } from "lucide-react";
-import React, { useState } from "react";
+import { Pause, Play, RotateCcw, Smartphone, X } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { useRef } from "react";
 import Countdown from "react-countdown";
+import { useWakeLock } from "react-screen-wake-lock";
 
 interface PropType {
   currentStep: number;
@@ -25,7 +26,20 @@ export default function TimerDisplay(props: PropType) {
   const [showStartNode, setShowStartNode] = useState<boolean>(true);
   const [showComplitionNode, setShowComplitionNode] = useState(false);
   const [isTimerRunning, setIsTimerRunnning] = useState<boolean>(false);
+  const [screenLockText, setScreenLockText] = useState<string>("Wake Ideal");
+  const [wakeScreenIconMounted, setWakeScreenIconMOunted] = useState<boolean>(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    setWakeScreenIconMOunted(true);
+  }, []);
+
+  const { isSupported, request, release } = useWakeLock({
+    onRequest: () => setScreenLockText("Wake Active"),
+    onError: () => setScreenLockText("Request Failed"),
+    onRelease: () => setScreenLockText("Wake Released"),
+    reacquireOnPageVisible: true,
+  });
 
   const unlockAudio = () => {
     const audio = new Audio("/audio/beep.mp3");
@@ -62,21 +76,34 @@ export default function TimerDisplay(props: PropType) {
   const handleTimerCycleComplition = (): void => {
     playBeep();
     setIsTimerRunnning(false);
-    props.currentStep < 4
-      ? props.setCurrentStep((props.currentStep + 1) as CurrentStepStateType)
-      : setShowComplitionNode(true);
+    if (props.currentStep < 4) {
+      props.setCurrentStep((props.currentStep + 1) as CurrentStepStateType);
+    } else {
+      setShowComplitionNode(true);
+      release();
+    }
   };
 
-  const handleReset = (): void => {
-    setShowComplitionNode(false);
-    setShowStartNode(true);
-    props.setCurrentStep(1);
+  const handleResetOrClose = (opp: "reset" | "close tab"): void => {
+    if (opp == "close tab") {
+      if (window !== undefined) {
+        window?.open("", "_self")?.close();
+      }
+    }
+
+    if (opp == "reset") {
+      setShowComplitionNode(false);
+      setShowStartNode(true);
+      props.setCurrentStep(1);
+    }
   };
 
   const handlePlayButton = (): void => {
     unlockAudio();
-    {
-      showStartNode && setShowStartNode(false);
+
+    if (showStartNode) {
+      request();
+      setShowStartNode(false);
     }
 
     isTimerRunning ? countRef.current?.getApi().stop() : countRef.current?.getApi().start();
@@ -84,13 +111,27 @@ export default function TimerDisplay(props: PropType) {
 
   return (
     <div className="bg-site-blue relative flex min-h-75 flex-col rounded-b-[42px] p-4">
-      <div className="flex items-center justify-end">
-        <button onClick={handleReset} className="text-sm tracking-widest underline">
-          Reset
+      <div className="flex items-center justify-between">
+        {wakeScreenIconMounted && (
+          <div className="bg-site-white flex h-8 items-center justify-start gap-2 overflow-hidden rounded-full pr-3">
+            <span className="border-site-white bg-site-blue flex h-8 w-8 items-center justify-center rounded-full border">
+              <Smartphone size={20} />
+            </span>
+            <p className="text-site-blue text-sm font-semibold">
+              {isSupported ? screenLockText : "Not Supported"}
+            </p>
+          </div>
+        )}
+
+        <button
+          onClick={() => handleResetOrClose("reset")}
+          className="bg-site-orange text-site-white ml-auto flex h-8 w-8 items-center justify-center rounded-full"
+        >
+          <RotateCcw className="text-site-white" size={20} />
         </button>
       </div>
 
-      <div className="flex h-full w-full flex-1 items-center justify-center">
+      <div className="flex h-full w-full flex-1 items-center justify-center pb-11.5">
         {showStartNode ? (
           <div className="flex flex-col">
             <p className="text-center text-3xl">👋🏼</p>
@@ -127,11 +168,11 @@ export default function TimerDisplay(props: PropType) {
 
       <div className="bg-site-blue-dark absolute top-full left-1/2 w-fit -translate-x-1/2 -translate-y-1/2 rounded-3xl p-3">
         <button
-          onClick={showComplitionNode ? handleReset : handlePlayButton}
+          onClick={() => (showComplitionNode ? handleResetOrClose("close tab") : handlePlayButton)}
           className={`${showComplitionNode ? "bg-site-orange" : isTimerRunning ? "bg-site-white" : "bg-site-pink"} flex h-17 w-17 items-center justify-center rounded-2xl`}
         >
           {showComplitionNode ? (
-            <RotateCcw className="text-site-white" size={40} />
+            <X className="text-site-white" size={40} />
           ) : isTimerRunning ? (
             <Pause className="fill-site-pink stroke-0" size={40} />
           ) : (
