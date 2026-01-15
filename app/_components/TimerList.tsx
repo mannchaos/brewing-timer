@@ -2,13 +2,8 @@
 
 import { brewingTimerArray } from "@/app/_data/BrewingTImerData";
 import { addPad, getDisplayTimeFromSeconds } from "@/app/_utils/utils";
-import { CurrentStepStateType } from "@/app/page";
 
-interface PropType {
-  currentStep: CurrentStepStateType;
-}
-
-export default function TimerList(props: PropType) {
+export default function TimerList() {
   const displaySecIntoUnit = (sec: number) => {
     const { hours, minutes, seconds } = getDisplayTimeFromSeconds(sec);
 

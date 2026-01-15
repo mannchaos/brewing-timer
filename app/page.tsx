@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <>
       <TimerDisplay currentStep={currentStep} setCurrentStep={setCurrentStep} />
-      <TimerList currentStep={currentStep} />
+      <TimerList />
     </>
   );
 }
